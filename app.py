@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import render_template, request
 from flaskext.mysql import MySQL
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -19,13 +20,16 @@ mysql.init_app(app)
 @app.route('/')
 def index():
 
-    sql = "INSERT INTO `empleados` (`id`, `nombre`, `correo`, `foto`) VALUES (NULL, 'Ocar', 'oscar123@gmail.com', 'foto.jpg');"
+    sql = "SELECT * FROM `empleados`;"
     conn = mysql.connect()
     cursor = conn.cursor()
     cursor.execute(sql)
-    conn.commit()   #cierra la conexión
+    
+    empleados = cursor.fetchall()   #me regresa toda la info obtenida
+    print(empleados)
 
-    return render_template('empleados/index.html')
+    conn.commit()   #cierra la conexión
+    return render_template('empleados/index.html', empleados = empleados)
 
 
 
@@ -43,8 +47,17 @@ def storage():
 
     _foto = request.files['txtFoto']
 
+    # obtengo el formato de ltiempo cuando subimos la foto
+    now = datetime.now()    #almaceno la fercha actual
+    tiempo = now.strftime("%Y%H%M%S") #tiempo dependera de esa fecha y la convierto a formato de tiempo
+    
+    #Evitamos sobreescribir una fotografia y la subimos y la guardo con el nuevo nombre en carpeta uploads
+    if _foto.filename !='':
+        nuevoNombreFoto = tiempo + _foto.filename
+        _foto.save("uploads/" + nuevoNombreFoto)
+
     sql = "INSERT INTO `empleados` (`id`, `nombre`, `correo`, `foto`) VALUES (NULL, %s, %s, %s);"
-    datos = (_nombre, _correo, _foto.filename)
+    datos = (_nombre, _correo, nuevoNombreFoto)
 
     conn = mysql.connect()
     cursor = conn.cursor()
