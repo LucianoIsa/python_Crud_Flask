@@ -1,5 +1,6 @@
+from distutils.util import execute
 from flask import Flask
-from flask import render_template, request
+from flask import render_template, request, redirect
 from flaskext.mysql import MySQL
 from datetime import datetime
 
@@ -32,6 +33,13 @@ def index():
     return render_template('empleados/index.html', empleados = empleados)
 
 
+@app.route('/destroy/<int:id>')
+def destroy(id):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM empleados WHERE id=%s" ,(id))
+    conn.commit()
+    return redirect('/')
 
 
 @app.route('/create')

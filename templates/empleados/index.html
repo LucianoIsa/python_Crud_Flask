@@ -12,7 +12,7 @@
   <body>
 
     <table class="table table-light">
-        <thead class="thead-light">
+        <thead class="thead-dark">
             <tr>
                 <th>#</th>
                 <th>Foto</th>
@@ -23,9 +23,18 @@
             </tr>
         </thead>
         <tbody>
+            {% for empleado in empleados %}
             <tr>
-                <td></td>
+                <td>{{empleado[0]}}</td>
+                <td>{{empleado[3]}}</td>
+                <td>{{empleado[1]}}</td>
+                <td>{{empleado[2]}}</td>
+                <td> Editar |
+                    <a href="/destroy/{{empleado[0]}}">Eliminar</a>
+                 </td>
             </tr>
+            
+            {% endfor %}
         </tbody>
     </table>
 
